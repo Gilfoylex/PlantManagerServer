@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "ExcelToSql": {
+      "commandName": "Project",
+      "commandLineArgs": "-i \"D:\\plant_manager\\PlantManagerServer\\test.xlsx\""
+    }
+  }
+}

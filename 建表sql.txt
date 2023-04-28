@@ -1,0 +1,51 @@
+CREATE TABLE public.plant_table
+(
+    id bigint NOT NULL, //乔木编号
+    object_id integer NOT NULL, //OBJECTID
+    cn_name text NOT NULL, //中文名称
+    latin_name text, //拉丁学名
+    common_name text, //俗名土名
+    longitude double precision NOT NULL, //经度
+    latitude double precision NOT NULL,  //纬度
+    district text NOT NULL, //城区
+    street_town text NOT NULL, //街道乡镇
+    community text NOT NULL, //社区
+    road_name text NOT NULL, //道路名
+    road_start text NOT NULL, //路段起始位置
+    road_end text NOT NULL, //路段截至位置
+    green_space_type text NOT NULL, //绿地类型
+    located_in_road_direction text NOT NULL, //位于道路方向
+    age integer, //树龄
+    age_determination_method text, //树龄确定方法
+    chest_diameters real[] NOT NULL, //胸径-cm
+    height real NOT NULL, //树高-m
+    crown_spread_e_w real NOT NULL, //冠幅_东西-m
+    crown_spread_s_n real NOT NULL, //冠幅_南北-m
+    pool_shape text NOT NULL DEFAULT '无', //树穴（树池）形状
+    circle_cave text, //圆形树穴
+    square_length real, //方形树穴长-cm
+    square_width real, // 方形树穴宽-cm
+    pest_and_pathogen_damage text NOT NULL DEFAULT 5, //病虫危害
+    soil text NOT NULL, //土壤
+    ground_condition text NOT NULL, //地面状况
+    growth text NOT NULL, //生长势
+    root_stem_leaf_condition text NOT NULL, //根茎叶状况
+    tilt real, //倾斜度
+    divided_plants integer, //胸径以下分株数
+    conservation_status text NOT NULL, //历史养护情况
+    external_factors_affecting_growth text NOT NULL DEFAULT '无', //影响树木生长的外部因素
+    external_security_risks text NOT NULL DEFAULT '无', //对外部环境的安全隐患
+    protection_measures text NOT NULL DEFAULT '刷石灰', //现状保护措施
+    remarks text, //备注
+    investigator text NOT NULL, //调查员
+    investigation_time bigint NOT NULL, //调查事件
+    investigation_number text NOT NULL, //调查编号
+    listing_batch integer, //挂牌批次
+    plate_number text, //制牌编号
+    tag_number2 text, //挂牌编号2
+    taged boolean, //是否挂牌
+    PRIMARY KEY (id)
+);
+
+ALTER TABLE IF EXISTS public.plant_table
+    OWNER to postgres;

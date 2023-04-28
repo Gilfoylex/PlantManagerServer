@@ -3,11 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33122.133
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantManagerServer", "PlantManagerServer\PlantManagerServer.csproj", "{F2DF01C2-ABC2-4E70-A933-17FDE8618559}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlantManagerServer", "PlantManagerServer\PlantManagerServer.csproj", "{F2DF01C2-ABC2-4E70-A933-17FDE8618559}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExcelToSql", "ExcelToSql\ExcelToSql.csproj", "{36CB1966-D59B-494F-A87B-085499D6AFA0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExcelToSql", "ExcelToSql\ExcelToSql.csproj", "{36CB1966-D59B-494F-A87B-085499D6AFA0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XBase", "XBase\XBase.csproj", "{E24A5293-0F1C-429A-B3F2-60428C9F9773}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "XBase", "XBase\XBase.csproj", "{E24A5293-0F1C-429A-B3F2-60428C9F9773}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Shared", "Shared\Shared.shproj", "{8BD0DBE4-89FC-40C2-B38E-C97FAA78AA27}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,5 +35,10 @@ Global
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D78088D3-B7C6-40D1-953A-2CD480F467B3}
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		Shared\Shared.projitems*{36cb1966-d59b-494f-a87b-085499d6afa0}*SharedItemsImports = 5
+		Shared\Shared.projitems*{8bd0dbe4-89fc-40c2-b38e-c97faa78aa27}*SharedItemsImports = 13
+		Shared\Shared.projitems*{f2df01c2-abc2-4e70-a933-17fde8618559}*SharedItemsImports = 5
 	EndGlobalSection
 EndGlobal
