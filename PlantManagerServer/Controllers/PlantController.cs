@@ -14,14 +14,14 @@ public class PlantController : ControllerBase
         _context = context;
     }
 
-    [HttpGet("{id}")]
-    public async Task<ActionResult<PlantTable>> GetPlantInfo(long id)
+    [HttpGet("{id:long}")]
+    public async Task<ActionResult<PlantInfoDisplay>> GetPlantInfo(long id)
     {
         var plant = await _context.PlantEntities.FindAsync(id);
         if (plant == null)
             return NotFound();
-
-        return Ok(plant);
+        
+        return Ok(Helpers.Converts.ConvertFromPlantTableToPlantInfoDisplay(plant));
     }
 
 }

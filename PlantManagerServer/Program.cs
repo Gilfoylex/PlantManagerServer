@@ -4,20 +4,32 @@ using PlantManagerServer.Models;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllers()
-    .AddJsonOptions(options =>
-    {
-        //∑¿÷πΩ´ ◊◊÷ƒ∏±‰Œ™–°–¥
-        options.JsonSerializerOptions.PropertyNamingPolicy = null;
-    });
+// builder.Services.AddControllers()
+//     .AddJsonOptions(options =>
+//     {
+//         //Èò≤Ê≠¢Â∞ÜjsonÈ¶ñÂ≠óÊØçÂ∞èÂÜô
+//         options.JsonSerializerOptions.PropertyNamingPolicy = null;
+//     });
 
 // Add DbContext configuration
 builder.Services.AddDbContext<PlantDbContext>(opt => opt.UseNpgsql(
     builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.AddControllers();
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
 var app = builder.Build();
 
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
 // Configure the HTTP request pipeline.
+//app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
