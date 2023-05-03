@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Minio;
 using Minio.Exceptions;
+using PlantManagerServer.Helpers;
 using SixLabors.ImageSharp.Formats.Jpeg;
 
 namespace PlantManagerServer.Controllers;
@@ -19,7 +20,7 @@ public class ImageController : ControllerBase
     }
 
     [HttpGet("{imageName}")]
-    public async Task<IActionResult> GetImage(string imageName)
+    public async Task<IActionResult> GetImage(string imageName, [FromQuery] int width, [FromQuery] int height)
     {
         if (string.IsNullOrEmpty(imageName))
             return BadRequest("imageName Invalid");
@@ -30,13 +31,14 @@ public class ImageController : ControllerBase
             await _minioClient.GetObjectAsync(_bucketName, imageName, stream => stream.CopyTo(ms));
             ms.Position = 0;
             using var image = await Image.LoadAsync(ms);
-            // image.Mutate(x => x
-            //     .Resize(new ResizeOptions
-            //     {
-            //         Size = new Size(image.Width / 2, image.Height / 2),
-            //         Mode = ResizeMode.Max
-            //     })
-            // );
+            var newSize = Converts.GetScaleSize(image.Width, image.Height, width, height);
+            image.Mutate(x => x
+                .Resize(new ResizeOptions
+                {
+                    Size = newSize,
+                    Mode = ResizeMode.Max
+                })
+            );
             using var compressedImageStream = new MemoryStream();
             // Set the compression quality
             var encoder = new JpegEncoder

@@ -21,7 +21,7 @@ try
 // Add Minio configuration
     var minioConfig = builder.Configuration.GetSection("Minio").Get<MinioConfig>();
 // Register MinioClient as singleton
-    builder.Services.AddSingleton(x => 
+    builder.Services.AddSingleton(x =>
         new MinioClient()
             .WithEndpoint(minioConfig.Endpoint)
             .WithCredentials(minioConfig.AccessKey, minioConfig.SecretKey)
