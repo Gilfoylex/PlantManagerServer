@@ -101,7 +101,7 @@ class Program
                 curProperty.SetValue(plant, value);
             }
 
-           dbContext.PlantEntities.Add(plant);
+            dbContext.PlantEntities.Add(plant);
         }
 
         dbContext.SaveChanges();
