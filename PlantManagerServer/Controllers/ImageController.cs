@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Minio;
 using Minio.Exceptions;
@@ -12,9 +13,11 @@ public class ImageController : ControllerBase
 {
     private readonly MinioClient _minioClient;
     private readonly string _bucketName;
+    private readonly ILogger<ImageController> _logger;
 
-    public ImageController(MinioClient client, IConfiguration configuration)
+    public ImageController(MinioClient client, IConfiguration configuration, ILogger<ImageController> logger)
     {
+        _logger = logger;
         _minioClient = client;
         _bucketName = configuration.GetValue<string>("Minio:BucketName");
     }
@@ -22,9 +25,21 @@ public class ImageController : ControllerBase
     [HttpGet("{imageName}")]
     public async Task<IActionResult> GetImage(string imageName, [FromQuery] int width, [FromQuery] int height)
     {
-        if (string.IsNullOrEmpty(imageName))
-            return BadRequest("imageName Invalid");
+        // 获取客户端IP地址
+        var clientIpAddress = HttpContext.Connection.RemoteIpAddress.ToString();
+        // 获取User-Agent
+        //var userAgent = HttpContext.Request.Headers["User-Agent"].ToString();
+
+        // 获取请求URL
+        var requestUrl = HttpContext.Request.GetDisplayUrl();
+        _logger.LogInformation("client address={ClientIpAddress} request, {RequestUrl}", clientIpAddress, requestUrl);
         
+        if (string.IsNullOrEmpty(imageName))
+        {
+            _logger.LogWarning("client address={ClientIpAddress} request imageName Invalid, {RequestUrl}", clientIpAddress, requestUrl);
+            return BadRequest("imageName Invalid");
+        }
+
         try
         {
             using var ms = new MemoryStream();
@@ -52,16 +67,19 @@ public class ImageController : ControllerBase
         }
         catch (MinioException e)
         {
+            _logger.LogError(e,"client address={ClientIpAddress} request fail, minio error, {RequestUrl}", clientIpAddress, requestUrl);
             // 处理与MinIO服务器的通信中可能出现的异常
             return StatusCode(500, e.Message);
         }
         catch (InvalidImageContentException)
         {
+            _logger.LogError("client address={ClientIpAddress} request fail, image error, {RequestUrl}", clientIpAddress, requestUrl);
             // 如果无法解析图像，返回错误消息
             return BadRequest("Invalid image data.");
         }
         catch (Exception e)
         {
+            _logger.LogError(e, "client address={ClientIpAddress} request fail, ex error, {RequestUrl}", clientIpAddress, requestUrl);
             return BadRequest("Get image error");
         }
     }
