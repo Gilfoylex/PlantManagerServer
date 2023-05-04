@@ -21,7 +21,7 @@ public class PlantController : ControllerBase
     public async Task<ActionResult<PlantInfoDisplay>> GetPlantInfo(long id)
     {
         // 获取客户端IP地址
-        var clientIpAddress = HttpContext.Connection.RemoteIpAddress.ToString();
+        var clientIpAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
         // 获取User-Agent
         //var userAgent = HttpContext.Request.Headers["User-Agent"].ToString();
 

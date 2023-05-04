@@ -26,7 +26,7 @@ public class ImageController : ControllerBase
     public async Task<IActionResult> GetImage(string imageName, [FromQuery] int width, [FromQuery] int height)
     {
         // 获取客户端IP地址
-        var clientIpAddress = HttpContext.Connection.RemoteIpAddress.ToString();
+        var clientIpAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
         // 获取User-Agent
         //var userAgent = HttpContext.Request.Headers["User-Agent"].ToString();
 
@@ -43,27 +43,41 @@ public class ImageController : ControllerBase
         try
         {
             using var ms = new MemoryStream();
-            await _minioClient.GetObjectAsync(_bucketName, imageName, stream => stream.CopyTo(ms));
-            ms.Position = 0;
-            using var image = await Image.LoadAsync(ms);
-            var newSize = Converts.GetScaleSize(image.Width, image.Height, width, height);
-            image.Mutate(x => x
-                .Resize(new ResizeOptions
+            var args = new GetObjectArgs()
+                .WithBucket(_bucketName)
+                .WithObject(imageName)
+                .WithCallbackStream(async stream =>
                 {
-                    Size = newSize,
-                    Mode = ResizeMode.Max
-                })
-            );
-            using var compressedImageStream = new MemoryStream();
-            // Set the compression quality
-            var encoder = new JpegEncoder
+                    await stream.CopyToAsync(ms);
+                });
+
+            var stat = await _minioClient.GetObjectAsync(args);
+            ms.Position = 0;
+            if (stat != null)
             {
-                Quality = 80 // Set the compression quality between 1 and 100
-            };
-            await image.SaveAsync(compressedImageStream, encoder);
-            compressedImageStream.Position = 0;
-            // 将压缩后的图像返回给网页前端
-            return File(compressedImageStream.ToArray(), "image/jpeg");
+                using var image = await Image.LoadAsync(ms);
+                var newSize = Converts.GetScaleSize(image.Width, image.Height, width, height);
+                image.Mutate(x => x
+                    .Resize(new ResizeOptions
+                    {
+                        Size = newSize,
+                        Mode = ResizeMode.Max
+                    })
+                );
+                using var compressedImageStream = new MemoryStream();
+                // Set the compression quality
+                var encoder = new JpegEncoder
+                {
+                    Quality = 80 // Set the compression quality between 1 and 100
+                };
+                await image.SaveAsync(compressedImageStream, encoder);
+                compressedImageStream.Position = 0;
+                // 将压缩后的图像返回给网页前端
+                return File(compressedImageStream.ToArray(), "image/jpeg");
+            }
+            
+            _logger.LogWarning("client address={ClientIpAddress} request fail, not found, {RequestUrl}", clientIpAddress, requestUrl);
+            return BadRequest("imageName not found");
         }
         catch (MinioException e)
         {
