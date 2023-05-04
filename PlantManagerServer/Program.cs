@@ -22,7 +22,7 @@ try
         .ReadFrom.Configuration(context.Configuration)
         .ReadFrom.Services(services)
         .Enrich.FromLogContext()
-        .WriteTo.Console());
+        /*.WriteTo.Console()*/); //这里如果也输出到console的话会输出两遍
 
     // Add services to the container.
     // builder.Services.AddControllers()
