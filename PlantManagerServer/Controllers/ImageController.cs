@@ -46,9 +46,9 @@ public class ImageController : ControllerBase
             var args = new GetObjectArgs()
                 .WithBucket(_bucketName)
                 .WithObject(imageName)
-                .WithCallbackStream(async stream =>
+                .WithCallbackStream(stream =>
                 {
-                    await stream.CopyToAsync(ms);
+                    stream.CopyTo(ms);
                 });
 
             var stat = await _minioClient.GetObjectAsync(args);
