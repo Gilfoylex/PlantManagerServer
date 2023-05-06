@@ -23,7 +23,7 @@ public class ImageController : ControllerBase
     }
 
     [HttpGet("{imageName}")]
-    public async Task<IActionResult> GetImage(string imageName, [FromQuery] int width, [FromQuery] int height)
+    public async Task<IActionResult> GetImage(string imageName, [FromQuery] int width, [FromQuery] int height, [FromQuery] string format = "jpeg")
     {
         // 获取客户端IP地址
         var clientIpAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
@@ -65,15 +65,11 @@ public class ImageController : ControllerBase
                     })
                 );
                 using var compressedImageStream = new MemoryStream();
-                // Set the compression quality
-                var encoder = new JpegEncoder
-                {
-                    Quality = 80 // Set the compression quality between 1 and 100
-                };
+                var encoder = Converts.GetImageEncoder(format);
                 await image.SaveAsync(compressedImageStream, encoder);
                 compressedImageStream.Position = 0;
                 // 将压缩后的图像返回给网页前端
-                return File(compressedImageStream.ToArray(), "image/jpeg");
+                return File(compressedImageStream.ToArray(), Converts.GetImageContentType(format));
             }
             
             _logger.LogWarning("client address={ClientIpAddress} request fail, not found, {RequestUrl}", clientIpAddress, requestUrl);

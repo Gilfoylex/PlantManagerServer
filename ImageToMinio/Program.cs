@@ -43,7 +43,8 @@ class Program
 
             var bucketName = options.Bucket;
             // Check if the bucket exists
-            var found = await minioClient.BucketExistsAsync(bucketName);
+            var args = new BucketExistsArgs().WithBucket(bucketName);
+            var found = await minioClient.BucketExistsAsync(args).ConfigureAwait(false);
             if (!found)
             {
                 // If not, create a new bucket
@@ -68,7 +69,7 @@ class Program
                         continue;
                     }
                     var objectName = $"{imageKey}-{startIndex++}{fileExtension}";
-                    tasks.Add(UploadFile(minioClient, bucketName, objectName, imagePath));
+                    tasks.Add(UploadFile(minioClient, bucketName, objectName, imagePath, options.ContentType));
                 }
 
                 await Task.WhenAll(tasks);
@@ -84,13 +85,19 @@ class Program
         }
     }
 
-    private static async Task UploadFile(MinioClient client,string bucketName, string objectName, string filePath)
+    private static async Task UploadFile(MinioClient client,string bucketName, string objectName, string filePath, string contentType)
     {
         try
         {
             await using var fileStream = File.OpenRead(filePath);
             // Upload the file to the specified bucket and object
-            await client.PutObjectAsync(bucketName, objectName, fileStream, fileStream.Length);
+            var args = new PutObjectArgs()
+                .WithBucket(bucketName)
+                .WithObject(objectName)
+                .WithStreamData(fileStream)
+                .WithObjectSize(fileStream.Length)
+                .WithContentType(contentType);
+            await client.PutObjectAsync(args).ConfigureAwait(false);
             Logger.TryGet(LogLevel.Information, LogArea.ImageToMinio)?.Log($"{filePath} uploaded successfully.");
         }
         catch (Exception ex)
@@ -103,7 +110,7 @@ class Program
     {
         foreach (var error in errors)
         {
-            Logger.TryGet(LogLevel.Error, LogArea.ExcelToSql)?.Log(error.ToString());
+            Logger.TryGet(LogLevel.Error, LogArea.ExcelToSql)?.Log(error.ToString()?? "");
         }
 
         _exitEvent.Set();

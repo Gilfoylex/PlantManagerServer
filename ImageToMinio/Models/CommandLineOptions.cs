@@ -24,4 +24,7 @@ public class CommandLineOptions
     
     [Option('e', "extension", HelpText = "fileExtension")]
     public string FileExtension { get; set; } = ".png";
+    
+    [Option('c', "content-type", HelpText = "minio upload ContentType")]
+    public string ContentType { get; set; } = "image/png";
 }
