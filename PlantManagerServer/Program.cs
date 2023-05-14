@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Minio;
 using PlantManagerServer.Models;
 using Serilog;
@@ -45,6 +47,23 @@ try
             .WithCredentials(minioConfig.AccessKey, minioConfig.SecretKey)
             .WithSSL(minioConfig.Secure)
             .Build());
+    
+    // Add jwt
+    // 读取配置文件
+    var jwtSettings = builder.Configuration.GetSection("JwtSettings");
+    builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        .AddJwtBearer(options =>
+        {
+            options.TokenValidationParameters = new TokenValidationParameters()
+            {
+                ClockSkew = TimeSpan.Zero,
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                //ValidIssuer = 
+            };
+        });
 
     builder.Services.AddControllers();
 
