@@ -58,28 +58,29 @@ try
     //builder.Services.AddSwaggerGen();
     builder.Services.AddSwaggerGen(option =>
     {
-        option.SwaggerDoc("v1", new OpenApiInfo { Title = "Demo API", Version = "v1" });
         option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
         {
+            Name = "Authorization",
             In = ParameterLocation.Header,
             Description = "Please enter a valid token",
-            Type = SecuritySchemeType.Http,
-            BearerFormat = "JWT",
+            Type = SecuritySchemeType.ApiKey,
             Scheme = "Bearer"
         });
         
         option.AddSecurityRequirement(new OpenApiSecurityRequirement()
         {
             {
-                new OpenApiSecurityScheme()
+                new OpenApiSecurityScheme
                 {
-                    Reference = new OpenApiReference()
+                    Name = "Bearer",
+                    In = ParameterLocation.Header,
+                    Reference = new OpenApiReference
                     {
-                        Type = ReferenceType.Schema,
-                        Id = "Bearer"
+                        Id = "Bearer",
+                        Type = ReferenceType.SecurityScheme
                     }
                 },
-                Array.Empty<string>()
+                new List<string>()
             }
         });
     });
