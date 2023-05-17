@@ -11,4 +11,5 @@ public class PlantDbContext : DbContext
     }
 
     public DbSet<PlantTable> PlantEntities { get; set; }
+    public DbSet<UserTable> UserEntities { get; set; }
 }
